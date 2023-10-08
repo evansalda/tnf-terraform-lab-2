@@ -1,92 +1,67 @@
-# partie-2
+# CONFIGURATION DU PROVIDER AWS ET DU BACKEND
 
+## Configuration du provider AWS
 
+L’objectif de ce lab étant de gérer une infrastructure sur le cloud AWS, terraform doit être en mesure de contacter l’API d’AWS pour lui indiquer ce qu’il doit créer, modifier ou supprimer. Pour cela, il est nécessaire de configurer le provider AWS dans votre code terraform.
 
-## Getting started
+**Configuration des credentials**
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+On appelle « credentials » les informations utilisées pour se connecter à un système. Dans le cadre de ce lab, les credentials que terraform utilise pour se connecter à l’API d’AWS sont une Access Key et une Secret Key :
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- Créez un répertoire nommé **.aws** (n’oubliez pas le .) dans le répertoire C:\Utilisateurs\<votre-nom-d-utilisateur
+- Dans le répertoire **C:\Utilisateurs\<votre-nom-d-utilisateur\.aws**, créez le fichier **credentials** et ajoutez-y le contenu suivant (remplacez *votre-access-key* et *votre-secret-key* par les access key et secret key AWS qui vous ont été communiqué) :
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/thenuumfactory/mainlab/partie-2.git
-git branch -M main
-git push -uf origin main
+[nuumfactory-student]
+aws_access_key_id = votre-access-key
+aws_secret_access_key = votre-secret-key
 ```
 
-## Integrate with your tools
+**Déclaration du provider AWS**
 
-- [ ] [Set up project integrations](https://gitlab.com/thenuumfactory/mainlab/partie-2/-/settings/integrations)
+Dans le répertoire **nuumfactory-labs/main-lab/**, créez le fichier **main.tf** et déclarez le provider AWS en ajoutant le contenu suivant :
 
-## Collaborate with your team
+```
+provider "aws" {
+  region = "eu-west-3"
+  profile = "nuumfactory-student"
+}
+```
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+Lors de son exécution terraform cherche ses credentials selon l’ordre suivant :
 
-## Test and Deploy
+- Les paramètres access_key et secret_key du block provider
+- Les variables d’environnement AWS_ACCESS_KEY_ID et AWS_SECRET_ACCESS_KEY
+- Le paramètre shared_credentials_files du block provider
 
-Use the built-in continuous integration in GitLab.
+La valeur par défaut du paramètre **shared_credentials_files** étant **C:\Utilisateurs\<votre-nom-d-utilisateur\.aws\credentials** sur Windows et **$HOME/.aws/credentials** sur Linux.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Dans le cas présent, terraform sera en mesure de s’authentifier sur l’API d’AWS car les credentials se trouvent bien dans le fichier **C:\Utilisateurs\<votre-nom-d-utilisateur\.aws\credentials**.
 
-***
+**Identification du backend**
 
-# Editing this README
+Votre fichier .tfstate devra être stocké dans un [bucket S3](https://aws.amazon.com/s3/?nc1=h_ls) créé sur le compte AWS dédié à ce lab :
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- Connectez-vous au compte AWS du lab via l’URL suivante : https://689995499512.signin.aws.amazon.com/console
+- Renseignez votre adresse mail (@thenuumfactory.fr) dans le champ **Nom d’utilisateur** et votre mot de passe dans le champ **Mot de passe** puis cliquez sur **Connexion**
+- Depuis la page d’accueil, sélectionnez la région **Paris** (en haut à droite), tapez **S3** dans la barre de recherche et cliquez sur le service S3
+- Identifiez le bucket nommé **nuumfactory-terraform-backend** : c’est dans ce bucket que votre remote state sera stocké. Ce bucket sera donc votre backend.
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+**Configuration du backend dans terraform**
 
-## Name
-Choose a self-explaining name for your project.
+Dans votre fichier **main.tf**, déclarez votre backend de la manière suivante (remplacez **XX** par le numéro qui vous a été communiqué) :
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+```
+terraform {
+  backend "s3" {
+    bucket  = "nuumfactory-terraform-backend"
+    key     = "terraform-XX-dev.tfstate"
+    region  = "eu-west-3"
+    profile = "nuumfactory-student"
+  }
+}
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Exécutez ensuite la commande [**terraform init**](https://developer.hashicorp.com/terraform/cli/commands/init) et constatez la présence du message **Successfully configured the backend "s3"! Terraform will automatically use this backend unless the backend configuration changes.** dans les logs.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Tous les prérequis sont maintenant en place pour que vous puissiez gérer une infrastructure sur AWS avec terraform.
