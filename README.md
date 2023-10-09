@@ -34,9 +34,9 @@ Lors de son exécution terraform cherche ses credentials selon l’ordre suivant
 - Les variables d’environnement AWS_ACCESS_KEY_ID et AWS_SECRET_ACCESS_KEY
 - Le paramètre shared_credentials_files du block provider
 
-La valeur par défaut du paramètre **shared_credentials_files** étant **C:\Utilisateurs\<votre-nom-d-utilisateur\.aws\credentials** sur Windows et **$HOME/.aws/credentials** sur Linux.
+La valeur par défaut du paramètre **shared_credentials_files** étant **C:\Utilisateurs\\<votre-nom-d-utilisateur\>\\.aws\credentials** sur Windows et **$HOME/.aws/credentials** sur Linux.
 
-Dans le cas présent, terraform sera en mesure de s’authentifier sur l’API d’AWS car les credentials se trouvent bien dans le fichier **C:\Utilisateurs\<votre-nom-d-utilisateur\.aws\credentials**.
+Dans le cas présent, terraform sera en mesure de s’authentifier sur l’API d’AWS car les credentials se trouvent bien dans le fichier **C:\Utilisateurs\\<votre-nom-d-utilisateur\>\\.aws\credentials**.
 
 **Identification du backend**
 
