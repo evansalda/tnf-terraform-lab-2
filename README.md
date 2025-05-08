@@ -8,8 +8,8 @@ L’objectif de ce lab étant de gérer une infrastructure sur le cloud AWS, ter
 
 On appelle « credentials » les informations utilisées pour se connecter à un système. Dans le cadre de ce lab, les credentials que terraform utilise pour se connecter à l’API d’AWS sont une Access Key et une Secret Key :
 
-- Créez un répertoire nommé **.aws** (n’oubliez pas le .) dans le répertoire C:\Utilisateurs\<votre-nom-d-utilisateur
-- Dans le répertoire **C:\Utilisateurs\<votre-nom-d-utilisateur\.aws**, créez le fichier **credentials** et ajoutez-y le contenu suivant (remplacez *votre-access-key* et *votre-secret-key* par les access key et secret key AWS qui vous ont été communiqué) :
+- Créez un répertoire nommé **.aws** (n’oubliez pas le .) dans le répertoire C:\Utilisateurs\<votre-nom-d-utilisateur>
+- Dans le répertoire **C:\Utilisateurs\<votre-nom-d-utilisateur>\\.aws**, créez le fichier **credentials** et ajoutez-y le contenu suivant (remplacez *votre-access-key* et *votre-secret-key* par les access key et secret key AWS qui vous ont été communiqué) :
 
 ```
 [nuumfactory-student]
