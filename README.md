@@ -42,8 +42,8 @@ Dans le cas présent, terraform sera en mesure de s’authentifier sur l’API d
 
 Votre fichier .tfstate devra être stocké dans un [bucket S3](https://aws.amazon.com/s3/?nc1=h_ls) créé sur le compte AWS dédié à ce lab :
 
-- Connectez-vous au compte AWS du lab via l’URL suivante : https://689995499512.signin.aws.amazon.com/console
-- Renseignez votre adresse mail (@thenuumfactory.fr) dans le champ **Nom d’utilisateur** et votre mot de passe dans le champ **Mot de passe** puis cliquez sur **Connexion**
+- Connectez-vous au compte AWS du lab via l’URL suivante : https://645860290752.signin.aws.amazon.com/console
+- Renseignez votre nom d'utilisateur dans le champ **Nom d’utilisateur** et votre mot de passe dans le champ **Mot de passe** puis cliquez sur **Connexion**
 - Depuis la page d’accueil, sélectionnez la région **Paris** (en haut à droite), tapez **S3** dans la barre de recherche et cliquez sur le service S3
 - Identifiez le bucket nommé **nuumfactory-terraform-backend** : c’est dans ce bucket que votre remote state sera stocké. Ce bucket sera donc votre backend.
 
